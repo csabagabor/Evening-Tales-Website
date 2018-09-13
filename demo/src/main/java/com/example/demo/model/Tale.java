@@ -1,25 +1,27 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Date;
-
-/**
- * Created by Csabi on 9/11/2018.
- */
 public class Tale {
+
+    private int id;
+
+
     private String title;
+
+
     private String description;
-    private Date dateAdded;
+
     private int rating;
 
     public Tale() {
 
     }
 
-    public Tale(String title, String description, Date dateAdded, int rating) {
+    public Tale(String title, String description, int rating) {
         this.title = title;
         this.description = description;
-        this.dateAdded = dateAdded;
         this.rating = rating;
     }
 
@@ -38,19 +40,11 @@ public class Tale {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public Date getDateAdded() {
-        return dateAdded;
-    }
-
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
-    }
-
+    @JsonIgnore
     public int getRating() {
         return rating;
     }
-
+    @JsonProperty
     public void setRating(int rating) {
         this.rating = rating;
     }

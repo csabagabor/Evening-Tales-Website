@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface TaleService {
     public Tale getTaleByDate(Date date);
-
+    public int getRatingByDate(Date date);
     public List<Tale> getTopTales(int limit);
 }

@@ -21,6 +21,11 @@ public class TaleServiceImpl implements TaleService {
     }
 
     @Override
+    public int getRatingByDate(Date date) {
+        return taleRepository.getRatingByDate(date);
+    }
+
+    @Override
     public List<Tale> getTopTales(int limit) {
         return null;
     }
