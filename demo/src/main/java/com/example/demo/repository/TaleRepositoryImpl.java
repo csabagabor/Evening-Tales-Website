@@ -41,11 +41,11 @@ public class TaleRepositoryImpl implements TaleRepository {
         PreparedStatement pstmt = null;
         try (Connection conn = ConnectionFactory.getConnection()) {
 
-            String SQL = "Select * from TaleRating";
+            String SQL = "Select rating from TaleRating where id=" + differenceInDays;//SQL injection not possible
             pstmt = conn.prepareStatement(SQL);
             try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    System.out.println(rs.getInt("id")+" "+ rs.getInt("rating"));
+                if (rs.next()) {
+                    return rs.getInt("rating");
                 }
             }
 
@@ -54,9 +54,9 @@ public class TaleRepositoryImpl implements TaleRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return 0;
+        return -1;
     }
+
 
     @Override
     public List<Tale> getTopTales(int limit) {
