@@ -1,51 +1,77 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Tale;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import helper.DateHelper;
 import org.springframework.stereotype.Repository;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.AbstractMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import java.util.Map;
 
 @Repository
 public class TaleRepositoryImpl implements TaleRepository {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    private static Date firstDate;
-
-    static {
-        try {
-            firstDate = dateFormat.parse("12/09/2018");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public float getRatingByDate(LocalDate date) {
+        Map.Entry<Integer, Float> result = getAllRatingDataByDate(date);
+        if (result != null)
+            return result.getValue();
+        return -1;
     }
 
-
-    @Override
-    public int getRatingByDate(Date date) {
-        Date newDate = parseDateIntoCorrectFormat(date);
-        long differenceInDays = getDifferenceDates(firstDate, newDate);
-        PreparedStatement pstmt = null;
+    private Map.Entry<Integer, Float> getAllRatingDataByDate(LocalDate date) {
+        Map.Entry<Integer, Float> resultEntry = null;
         try (Connection conn = ConnectionFactory.getConnection()) {
-
-            String SQL = "Select rating from TaleRating where id=" + differenceInDays;//SQL injection not possible
+            Date sqlDate = Date.valueOf(date);
+            PreparedStatement pstmt = null;
+            String SQL = "Select rating from TaleRating where date_added=?";
             pstmt = conn.prepareStatement(SQL);
+            pstmt.setDate(1, sqlDate);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("rating");
+                    float rating = rs.getFloat("rating");
+                    int nrRating = rs.getInt("nr_rating");
+                    resultEntry = new AbstractMap.SimpleEntry<>(nrRating, rating);
+                    return resultEntry;
+                }
+            }
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public int addRatingByDate(LocalDate date, int rating) {
+        float oldRating;
+        int nr_rating;
+        Map.Entry<Integer, Float> result = getAllRatingDataByDate(date);
+        if (result == null)
+            return -1;
+        oldRating = result.getValue();
+        nr_rating = result.getKey();
+        float newRating = calculateRating(oldRating, nr_rating, rating);
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            Date sqlDate = Date.valueOf(date);
+            PreparedStatement pstmt = null;
+            String SQL = "update TaleRating set rating=? where date_added=?";
+            pstmt = conn.prepareStatement(SQL);
+
+            pstmt.setFloat(1, newRating);
+            pstmt.setDate(2, sqlDate);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return 0;
                 }
             }
 
@@ -57,6 +83,11 @@ public class TaleRepositoryImpl implements TaleRepository {
         return -1;
     }
 
+    private float calculateRating(float oldRating, int nr_rating, int rating) {
+        float newRating = (oldRating * nr_rating + rating) / (nr_rating + 1);
+        return newRating;
+    }
+
 
     @Override
     public List<Tale> getTopTales(int limit) {
@@ -64,54 +95,23 @@ public class TaleRepositoryImpl implements TaleRepository {
     }
 
     @Override
-    public Tale getTaleByDate(Date date) {
+    public Tale getTaleByDate(LocalDate date) {
 
         Tale tale = null;
-        byte[] jsonData;
-        Date newDate = parseDateIntoCorrectFormat(date);
-        long differenceInDays = getDifferenceDates(firstDate, newDate);
+        String correctDateString = DateHelper.parseLocalDateIntoCorrectFormat(date);
         try {
             ClassLoader cl = this.getClass().getClassLoader();
-            InputStream inputStream = cl.getResourceAsStream("static/tales/tale" + differenceInDays + ".txt");
-            jsonData = inputStreamToByteArray(inputStream);
+            InputStream inputStream = cl.getResourceAsStream("static/tales/tales.json");
             ObjectMapper objectMapper = new ObjectMapper();
-            tale = objectMapper.readValue(jsonData, Tale.class);
+            Map<String, Tale> jsonMap = objectMapper.readValue(inputStream,
+                    new TypeReference<Map<String, Tale>>() {
+                    });
+            tale = jsonMap.get(correctDateString);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return tale;
-    }
-
-    private Date parseDateIntoCorrectFormat(Date date) {
-        String newDateString = dateFormat.format(date);
-        Date newDate = null;
-        try {
-            newDate = dateFormat.parse(newDateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return newDate;
-    }
-
-
-    private byte[] inputStreamToByteArray(InputStream inputStream) throws IOException {
-        //Inputstream to byte array
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int nRead;
-        byte[] data = new byte[16384];
-        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        buffer.flush();
-        return buffer.toByteArray();
-    }
-
-    private long getDifferenceDates(Date firstDate, Date secondDate) {
-        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        return diff;
     }
 
 
