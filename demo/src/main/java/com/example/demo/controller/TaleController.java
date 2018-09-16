@@ -2,14 +2,16 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Tale;
 import com.example.demo.service.TaleService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import helper.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.io.IOException;
+import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/tale")
@@ -17,17 +19,30 @@ public class TaleController {
 
     @Autowired
     private TaleService taleService;
+    private final String dateFormat = DateHelper.correctDatePattern;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @GetMapping("/")
     public Tale getTodaysTale() {
-        Tale tale = taleService.getTaleByDate(new Date());
+        Tale tale = taleService.getTaleByDate(LocalDate.now());
         return tale;
     }
 
     @GetMapping("/rating/{date}")
-    public int getRatingByDate(@PathVariable @DateTimeFormat(pattern="MM-dd-yyyy") Date date) {
-        int rating = taleService.getRatingByDate(date);
+    public float getRatingByLocalDate(@PathVariable @DateTimeFormat(pattern = dateFormat) LocalDate date) {
+        float rating = taleService.getRatingByDate(date);
         return rating;
+    }
+
+
+    @PutMapping("/rating/{date}")
+    public String addRatingByLocalDate(@PathVariable @DateTimeFormat(pattern = dateFormat) LocalDate date,
+                                       @RequestBody String body) throws IOException {
+        JsonNode jsonNode = mapper.readTree(body);
+        int rating = jsonNode.get("rating").intValue();
+
+        int returnValue = taleService.addRatingByDate(date, rating);
+        return returnValue > -1 ? "Success" : "Fail";
     }
 
 }

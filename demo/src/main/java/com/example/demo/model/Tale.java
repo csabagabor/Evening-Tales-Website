@@ -3,6 +3,32 @@ package com.example.demo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
+/*
+ select * from TaleRating;
+*/
+
+/*
+CREATE TABLE TaleRating (
+  id              SERIAL PRIMARY KEY,
+  date_added         date NOT NULL,
+  rating REAL NOT NULL,
+  nr_rating INT NOT NULL
+);
+ */
+/*
+INSERT INTO TaleRating (date_added , rating, nr_rating)
+VALUES ('2018-09-16', 0, 0);
+ */
+/*
+INSERT INTO TaleRating (date_added , rating, nr_rating)
+SELECT date::date, 0, 0
+from generate_series(
+  '2018-09-16'::date,
+  '2018-09-20'::date,
+  '1 day'::interval
+) date;
+ */
 public class Tale {
 
     private int id;

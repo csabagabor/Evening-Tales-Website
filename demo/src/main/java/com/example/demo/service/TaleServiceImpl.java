@@ -5,7 +5,7 @@ import com.example.demo.repository.TaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,13 +16,18 @@ public class TaleServiceImpl implements TaleService {
     TaleRepository taleRepository;
 
     @Override
-    public Tale getTaleByDate(Date date) {
+    public Tale getTaleByDate(LocalDate date) {
         return taleRepository.getTaleByDate(date);
     }
 
     @Override
-    public int getRatingByDate(Date date) {
+    public float getRatingByDate(LocalDate date) {
         return taleRepository.getRatingByDate(date);
+    }
+
+    @Override
+    public int addRatingByDate(LocalDate date, int rating) {
+        return taleRepository.addRatingByDate(date, rating);
     }
 
     @Override
