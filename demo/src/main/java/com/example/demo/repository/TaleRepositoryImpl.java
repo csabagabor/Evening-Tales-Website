@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.List;
@@ -26,14 +29,20 @@ public class TaleRepositoryImpl implements TaleRepository {
         return -1;
     }
 
+
+    private PreparedStatement createPreparedStatement(Connection conn, String SQLquery) throws SQLException {
+        PreparedStatement pstmt = null;
+        pstmt = conn.prepareStatement(SQLquery);
+        return pstmt;
+    }
+
     private Map.Entry<Integer, Float> getAllRatingDataByDate(LocalDate date) {
         Map.Entry<Integer, Float> resultEntry = null;
         try (Connection conn = ConnectionFactory.getConnection()) {
-            Date sqlDate = Date.valueOf(date);
-            PreparedStatement pstmt = null;
-            String SQL = "Select rating from TaleRating where date_added=?";
-            pstmt = conn.prepareStatement(SQL);
-            pstmt.setDate(1, sqlDate);
+            String SQL = "Select * from TaleRating where date_added=?";
+            PreparedStatement pstmt = createPreparedStatement(conn,SQL);
+            pstmt.setObject(1, date);
+            System.out.println(pstmt);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     float rating = rs.getFloat("rating");
@@ -62,13 +71,10 @@ public class TaleRepositoryImpl implements TaleRepository {
         nr_rating = result.getKey();
         float newRating = calculateRating(oldRating, nr_rating, rating);
         try (Connection conn = ConnectionFactory.getConnection()) {
-            Date sqlDate = Date.valueOf(date);
-            PreparedStatement pstmt = null;
             String SQL = "update TaleRating set rating=? where date_added=?";
-            pstmt = conn.prepareStatement(SQL);
-
+            PreparedStatement pstmt = createPreparedStatement(conn,SQL);
             pstmt.setFloat(1, newRating);
-            pstmt.setDate(2, sqlDate);
+            pstmt.setObject(2, date);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return 0;
