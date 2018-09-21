@@ -51,26 +51,46 @@ function getRatingByDate(date){
   var rating = localStorage.getItem("rating"+date);
   if(rating === null)
      rating = 0;
-  return rating;
+  return Number(rating);
 }
 
 function setRatingByDate(date, rating){
   //send data to api
-  var ratingData = {
-    "rating" : rating
+  var ratingData;
+  var httpMethod = 'POST';
+  var oldRating = getRatingByDate(date);
+  //check if it has been rated before or not
+  if(oldRating === 0){//not rated
+    ratingData = {
+      "rating" : rating
+    }
+    httpMethod = 'POST';
   }
+  else{//if rated before, update the previous rating
+    ratingData = {
+      "rating" : rating,
+      "oldRating" : oldRating
+    }
+    httpMethod = 'PUT';
+  }
+
   $.ajax({
    url: apiRatingURL+date,
-   type: 'PUT',
+   type: httpMethod,
    data : JSON.stringify(ratingData),
    dataType: "json",
    contentType: "application/json",
-   success: function(response) {
-    
-   },
+   success: function(data){
+        if(data.returnNumber == -4){//rating does not exist, post it
+          //first delete the rating
+          localStorage.removeItem("rating"+date);
+          //the new function call will send a POST reqesut instead of PUT
+          setRatingByDate(date, rating);
+        }
+    },
    error: function(err) {
       console.log(err);
-  }
+    }
   });
   //save rating to localstorage
   localStorage.setItem("rating"+date, rating);
