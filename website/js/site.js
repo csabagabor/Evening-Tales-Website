@@ -1,4 +1,8 @@
 var apiTaleURL = "https://lit-wildwood-83335.herokuapp.com/api/tale/";
+var apiRatingURL = "http://localhost:8080/api/tale/rating/";
+//http://localhost:8080/api/tale/rating/
+//https://lit-wildwood-83335.herokuapp.com/api/tale/rating/
+var currentTaleDate;
 
 var getDates = function(startDate, endDate) {
   var dates = [],
@@ -16,24 +20,97 @@ var getDates = function(startDate, endDate) {
 };
 
 function showTaleByDate(date){
+  var baseURL = window.location.href.split('?')[0];//url without query params
+  window.location = baseURL +"?date="+date;
+}
+
+function getTaleByURL(url){
+  let searchParams = new URLSearchParams(url.search);
+  let paramDate = searchParams.get('date');
+  if(paramDate)
+    getTaleByDate(paramDate);
+  else getTaleByDate(formatDateToString(new Date()));//show today's tale
+}
+
+function getTaleByDate(date){
+  currentTaleDate = date;
   let getURL = apiTaleURL;
-  if(date)
-    getURL+=date;
+  getURL+=date;
   $.ajax({
       url: getURL
   }).then(function(data) {
      $('#tale-title').text(data.title);
      $('#tale-description').text(data.description);
   });
+  //show user's Rating
+  var rating = getRatingByDate(date);
+  appendRating(rating);
 }
 
+function getRatingByDate(date){
+  var rating = localStorage.getItem("rating"+date);
+  if(rating === null)
+     rating = 0;
+  return rating;
+}
 
-function getTaleByURL(url){
-  let searchParams = new URLSearchParams(url.search);
-  let paramDate = searchParams.get('date');
-  if(paramDate)
-    showTaleByDate(paramDate);
-  else showTaleByDate(null);
+function setRatingByDate(date, rating){
+  //send data to api
+  var ratingData = {
+    "rating" : rating
+  }
+  $.ajax({
+   url: apiRatingURL+date,
+   type: 'PUT',
+   data : JSON.stringify(ratingData),
+   dataType: "json",
+   contentType: "application/json",
+   success: function(response) {
+    
+   },
+   error: function(err) {
+      console.log(err);
+  }
+  });
+  //save rating to localstorage
+  localStorage.setItem("rating"+date, rating);
+}
+
+function appendRating(rating){
+  $("#rating").emojiRating({
+     initRating : rating,
+     fontSize: 32,
+     onUpdate: function(count) {
+       setRatingByDate(currentTaleDate,count);
+     }
+   });
+}
+
+function formatDateToString(date){
+    year = date.getFullYear();
+    month = date.getMonth()+1;
+    dt = date.getDate();
+
+    if (dt < 10) {
+      dt = '0' + dt;
+    }
+    if (month < 10) {
+      month = '0' + month;
+    }
+    return (year+'-' + month + '-'+dt);
+}
+
+function appendItemsToArchiveList(){
+  var dates = getDates(new Date(2018,08,17), Date.now());
+  var archiveListElem = document.getElementById("archive-list");
+  dates.forEach(function(date) {
+    var prettyDate = formatDateToString(date);
+    var listItem = document.createElement("a");
+    listItem.appendChild(document.createTextNode(prettyDate));
+    listItem.href = "javascript:showTaleByDate('"+prettyDate+"');";
+    listItem.className = "dropdown-item";
+    archiveListElem.appendChild(listItem);
+  });
 }
 
 $(document).ready(function() {
@@ -45,44 +122,5 @@ $(document).ready(function() {
     //index.html
       getTaleByURL(window.location);
       appendItemsToArchiveList();
-      appendRating();
   }
-
-  function appendRating(){
-    $("#rating").emojiRating({
-       initRating : 0,
-       fontSize: 32,
-       onUpdate: function(count) {
-         alert(count);
-       }
-     });
-  }
-
-  function appendItemsToArchiveList(){
-    var dates = getDates(new Date(2018,08,17), Date.now());
-    var archiveListElem = document.getElementById("archive-list");
-    dates.forEach(function(date) {
-      var prettyDate = formatDateToString(date);
-      var listItem = document.createElement("a");
-      listItem.appendChild(document.createTextNode(prettyDate));
-      listItem.href = "javascript:showTaleByDate('"+prettyDate+"');";
-      listItem.className = "dropdown-item";
-      archiveListElem.appendChild(listItem);
-    });
-  }
-
-  function formatDateToString(date){
-      year = date.getFullYear();
-      month = date.getMonth()+1;
-      dt = date.getDate();
-
-      if (dt < 10) {
-        dt = '0' + dt;
-      }
-      if (month < 10) {
-        month = '0' + month;
-      }
-      return (year+'-' + month + '-'+dt);
-  }
-
 });
