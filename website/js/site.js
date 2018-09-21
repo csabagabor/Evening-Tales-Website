@@ -44,11 +44,10 @@ $(document).ready(function() {
   else{
     //index.html
       getTaleByURL(window.location);
-
-
       appendItemsToArchiveList();
       appendRating();
   }
+
   function appendRating(){
     $("#rating").emojiRating({
        initRating : 0,
@@ -59,19 +58,31 @@ $(document).ready(function() {
      });
   }
 
-
-
   function appendItemsToArchiveList(){
-    var dates = getDates(new Date(2018,08,17), new Date());
+    var dates = getDates(new Date(2018,08,17), Date.now());
     var archiveListElem = document.getElementById("archive-list");
     dates.forEach(function(date) {
-      var prettyDate = date.toISOString().substring(0, 10);
+      var prettyDate = formatDateToString(date);
       var listItem = document.createElement("a");
       listItem.appendChild(document.createTextNode(prettyDate));
       listItem.href = "javascript:showTaleByDate('"+prettyDate+"');";
       listItem.className = "dropdown-item";
       archiveListElem.appendChild(listItem);
     });
+  }
+
+  function formatDateToString(date){
+      year = date.getFullYear();
+      month = date.getMonth()+1;
+      dt = date.getDate();
+
+      if (dt < 10) {
+        dt = '0' + dt;
+      }
+      if (month < 10) {
+        month = '0' + month;
+      }
+      return (year+'-' + month + '-'+dt);
   }
 
 });
