@@ -47,7 +47,19 @@ $(document).ready(function() {
 
 
       appendItemsToArchiveList();
+      appendRating();
   }
+  function appendRating(){
+    $("#rating").emojiRating({
+       initRating : 0,
+       fontSize: 32,
+       onUpdate: function(count) {
+         alert(count);
+       }
+     });
+  }
+
+
 
   function appendItemsToArchiveList(){
     var dates = getDates(new Date(2018,08,17), new Date());
