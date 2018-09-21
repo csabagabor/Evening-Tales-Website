@@ -43,22 +43,31 @@ function getTaleByDate(date){
      $('#tale-description').text(data.description);
   });
   //show user's Rating
-  var rating = getRatingByDate(date);
+  var rating = getOwnRatingByDate(date);
   appendRating(rating);
+  showTaleRatingByDate(date);
 }
 
-function getRatingByDate(date){
+function showTaleRatingByDate(date){
+  $.ajax({
+      url: apiRatingURL+date
+  }).then(function(data) {
+     $('#average-rating').text("Avg. Rating: "+ data.rating + "("+ data.nr_rating +" ratings)");
+  });
+}
+
+function getOwnRatingByDate(date){
   var rating = localStorage.getItem("rating"+date);
   if(rating === null)
      rating = 0;
   return Number(rating);
 }
 
-function setRatingByDate(date, rating){
+function setOwnRatingByDate(date, rating){
   //send data to api
   var ratingData;
   var httpMethod = 'POST';
-  var oldRating = getRatingByDate(date);
+  var oldRating = getOwnRatingByDate(date);
   //check if it has been rated before or not
   if(oldRating === 0){//not rated
     ratingData = {
@@ -81,11 +90,15 @@ function setRatingByDate(date, rating){
    dataType: "json",
    contentType: "application/json",
    success: function(data){
+        if(data.returnNumber >=0){//success
+          //change average rating shown
+          showTaleRatingByDate(date);
+        }
         if(data.returnNumber == -4){//rating does not exist, post it
           //first delete the rating
           localStorage.removeItem("rating"+date);
           //the new function call will send a POST reqesut instead of PUT
-          setRatingByDate(date, rating);
+          setOwnRatingByDate(date, rating);
         }
     },
    error: function(err) {
@@ -101,7 +114,7 @@ function appendRating(rating){
      initRating : rating,
      fontSize: 32,
      onUpdate: function(count) {
-       setRatingByDate(currentTaleDate,count);
+       setOwnRatingByDate(currentTaleDate,count);
      }
    });
 }
