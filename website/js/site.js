@@ -147,13 +147,7 @@ function appendItemsToArchiveList(){
 }
 
 $(document).ready(function() {
-  if(window.location.href.indexOf("top")  > -1){
-    //top.html
-
-  }
-  else{
-    //index.html
-      getTaleByURL(window.location);
-      appendItemsToArchiveList();
-  }
+  //index.html
+    getTaleByURL(window.location);
+    appendItemsToArchiveList();
 });
