@@ -41,6 +41,7 @@ function getTaleByDate(date){
   }).then(function(data) {
      $('#tale-title').text(data.title);
      $('#tale-description').text(data.description);
+     hideLoadingScreen();
   });
   //show user's Rating
   var rating = getOwnRatingByDate(date);
@@ -48,11 +49,13 @@ function getTaleByDate(date){
   showTaleRatingByDate(date);
 }
 
+
+
 function showTaleRatingByDate(date){
   $.ajax({
       url: apiRatingURL+date
   }).then(function(data) {
-     $('#average-rating').text("Avg. Rating: "+ data.rating + "("+ data.nr_rating +" ratings)");
+     $('#average-rating').text("Avg. Rating: "+ data.rating.toFixed(2) + "("+ data.nr_rating +" ratings)");
   });
 }
 
