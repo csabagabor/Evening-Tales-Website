@@ -27,15 +27,23 @@ function getTopTales(limit){
                "<p id='tale-description' class='card-text'>" +  data[i].description  + '</p>' +
                '<h5>Date added: '+ data[i].dateAdded +  '</h5>' +
                '<p id="rating-date-' + data[i].dateAdded + '"></p>' +
-
+               '<a href="main.html" class="li-modal">Lab 6</a>' +
              '</div></div>');
             //append rating when available
             getTaleRatingByDate(data[i].dateAdded);
+
+            $('.li-modal').on('click', function(e){
+                  e.preventDefault();
+                  $('#mainModal').modal('show').find('.modal-content').load($(this).attr('href'));
+            });
+
          }
        }
        hideLoadingScreen();
   });
 }
+
+
 
 $(document).ready(function() {
     getTopTales(25);
