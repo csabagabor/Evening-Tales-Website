@@ -41,9 +41,14 @@ public class Tale {
 
     private int rating;
 
+    @JsonIgnore
+    private String dateAdded;
+
     public Tale() {
 
     }
+
+
 
     public Tale(String title, String description, int rating) {
         this.title = title;
@@ -66,12 +71,22 @@ public class Tale {
     public void setDescription(String description) {
         this.description = description;
     }
+
     @JsonIgnore
     public int getRating() {
         return rating;
     }
+
     @JsonProperty
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public String getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(String dateAdded) {
+        this.dateAdded = dateAdded;
     }
 }
