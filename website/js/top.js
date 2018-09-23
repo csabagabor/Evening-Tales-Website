@@ -1,8 +1,8 @@
-var apiTaleURL = "https://lit-wildwood-83335.herokuapp.com/api/tale/";
-var apiRatingURL = "http://localhost:8080/api/tale/rating/";
-var apiTopTalesURL = "http://localhost:8080/api/tale/top/";
-//http://localhost:8080/api/tale/rating/
-//https://lit-wildwood-83335.herokuapp.com/api/tale/rating/
+var domain = "https://lit-wildwood-83335.herokuapp.com";
+var apiTaleURL = domain+"/api/tale/";
+var apiRatingURL = domain+"/api/tale/rating/";
+var apiTopTalesURL = domain+"/api/tale/top/";
+
 
 function getTaleRatingByDate(date){
   $.ajax({
@@ -23,18 +23,26 @@ function getTopTales(limit){
            $("#my-content").append(  '<div class="card content" style="width: 18rem;margin-top:40px">' +
                '<div class="card-body">' +
 
-               "<h2 id='tale-title'>Top " +(i+1)+ " </br> " + data[i].title + "</h2>" +
-               "<p id='tale-description' class='card-text'>" +  data[i].description  + '</p>' +
+               "<h2>Top " +(i+1)+ " </br> " + data[i].title + "</h2>" +
+               "<p class='card-text'>" +  data[i].description.substring(0, 40)  + '</p>' +
                '<h5>Date added: '+ data[i].dateAdded +  '</h5>' +
                '<p id="rating-date-' + data[i].dateAdded + '"></p>' +
-               '<a href="main.html" class="li-modal">Lab 6</a>' +
+               '<a href="main.html" id="tale-date-' + data[i].dateAdded +'" class="li-modal btn btn-info">See Full description</a>' +
              '</div></div>');
             //append rating when available
             getTaleRatingByDate(data[i].dateAdded);
 
             $('.li-modal').on('click', function(e){
                   e.preventDefault();
-                  $('#mainModal').modal('show').find('.modal-content').load($(this).attr('href'));
+                  var id = $(this).attr('id');
+                  var date = id.replace("tale-date-","");
+
+                  $('#mainModal').modal('show').find('.modal-content').load($(this).attr('href'),function(data){
+                    //append tale and new title
+                    $('#story-big-title').text("Tale: "+date);
+                    getTaleByDate(date);
+                });
+
             });
 
          }
