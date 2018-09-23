@@ -141,7 +141,7 @@ function formatDateToString(date){
 }
 
 function appendItemsToArchiveList(){
-  var dates = getDates(new Date(2018,08,17), Date.now());
+  var dates = getDates(new Date(2018,08,16), Date.now());
   var archiveListElem = document.getElementById("archive-list");
   dates.forEach(function(date) {
     var prettyDate = formatDateToString(date);
