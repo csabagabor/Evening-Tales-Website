@@ -1,7 +1,8 @@
-var apiTaleURL = "https://lit-wildwood-83335.herokuapp.com/api/tale/";
-var apiRatingURL = "http://localhost:8080/api/tale/rating/";
-//http://localhost:8080/api/tale/rating/
-//https://lit-wildwood-83335.herokuapp.com/api/tale/rating/
+var domain = "https://lit-wildwood-83335.herokuapp.com";
+var apiTaleURL = domain+"/api/tale/";
+var apiRatingURL = domain+"/api/tale/rating/";
+
+
 var currentTaleDate;
 
 var getDates = function(startDate, endDate) {
@@ -39,6 +40,9 @@ function getTaleByDate(date){
   $.ajax({
       url: getURL
   }).then(function(data) {
+     if(formatDateToString(new Date()) !== date){
+       $('#story-big-title').text("Tale: "+date);
+     }
      $('#tale-title').text(data.title);
      $('#tale-description').text(data.description);
      hideLoadingScreen();
@@ -150,7 +154,14 @@ function appendItemsToArchiveList(){
 }
 
 $(document).ready(function() {
-  //index.html
-    getTaleByURL(window.location);
-    appendItemsToArchiveList();
+
+    if(window.location.href.indexOf("top") > -1){
+      //top.html
+    }
+    else{
+      //index.html
+      getTaleByURL(window.location);
+      appendItemsToArchiveList();
+    }
+
 });

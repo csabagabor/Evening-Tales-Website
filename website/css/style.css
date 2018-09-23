@@ -27,3 +27,9 @@ h1, h2{
   overflow: hidden;
   padding-bottom: 20px
 }
+
+
+.dropdown-menu{
+    max-height: 400px;
+    overflow-y: auto;
+}
