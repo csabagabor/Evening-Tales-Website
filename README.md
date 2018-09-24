@@ -1,11 +1,11 @@
-# Bedtime stories websites for kids with Spring Boot REST API + PostgreSQL hosted on Heroku
+# Bedtime stories website for kids with Spring Boot REST API + PostgreSQL hosted on Heroku
 ### About
 - This is a small application which serves a new bedtime story for kids every day.
 - Currently it hosts a total of 60 stories so new stories won't be available after 24 Nov 2018. 
 - Every story can be rated by users and all the average ratings are stored in a `PostgreSQL` database. The frontend communicates with the backend with a `REST` api.
 ### Features
 - `Spring Boot` backend with REST API hosted on HEROKU
-- frontent in `JS` + `jQuery` + `Bootstrap 4`
+- frontend in `JS` + `jQuery` + `Bootstrap 4`
 - `PostgreSQL` database(contains only 1 table for the avg. ratings ->> stories are stored in a `json` file)
 ### How to build/run
 1. first clone the project
@@ -34,7 +34,7 @@ from generate_series(
 ```sql
  select * from TaleRating;
 ```
-7. To run the app locally, you will have to configure it with your connection string. To get your `PostgreSQL` connection string, type `heroku config` in the `CLI` and copy the connection URL into the `ConnectionFactory` class located in the `com.example.demo.repository` package. Your code should look something like this:
+7. To run the app locally, you will have to configure it with your connection string. To get your `PostgreSQL` connection string, type `heroku config` in the `CLI` and copy the connection URL into the `ConnectionFactory` class located in the `com.example.demo.repository` package. Your code should look like this:
 ```java
 URI dbUri = null;
 String databaseUrl = System.getenv("DATABASE_URL");
