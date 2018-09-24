@@ -52,16 +52,16 @@ else{
 1. to generate the raw content of `tales.json` you can run this simple `Java` code then copy its output:
 ```java
 LocalDate startDate = LocalDate.of(2018, 11, 21);
-		LocalDate endDate = LocalDate.of(2019, 9, 15);
-		StringBuilder builder = new StringBuilder();
-		for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)){
+LocalDate endDate = LocalDate.of(2019, 9, 15);
+StringBuilder builder = new StringBuilder();
+for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)){
 			builder.append("\n  \""  + date + "\": { \n " +
 			    "  \"title\": \"\", \n " +
 			    "  \"description\": \"\" \n " +
 			    " },"
 					);		   
 		}
-		System.out.print(builder.substring(0, builder.length()-1));//remove comma at the end
+System.out.print(builder.substring(0, builder.length()-1));//remove comma at the end
 ```
 2. Before inserting the new story into the title/description field, you have to escape some characters in it to be a valid `json`; a good tool for this is [here](https://www.freeformatter.com/json-escape.html)
 ### Future improvements
