@@ -1,4 +1,5 @@
 var domain = "https://lit-wildwood-83335.herokuapp.com";
+//var domain = "http://localhost:8080";//for testing
 var apiTaleURL = domain+"/api/tale/";
 var apiRatingURL = domain+"/api/tale/rating/";
 
