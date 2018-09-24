@@ -68,3 +68,4 @@ System.out.print(builder.substring(0, builder.length()-1));//remove comma at the
 - for faster retrieval of data from the database, an in-memory database needs to be implemented like `Redis`; the same applies to the `json` file which contains the stories(this file should be mapped into memory)
 - the application is not built with security in mind, so anyone can send as many ratings as he wants with any simple tool like `Postman`(note that the frontend itself is secured in this sense, because a single user cannot send more than 1 rating/story only if the person clears his cookies/local storage)
 - more stories need to be added
+> Note: this application uses the `jQuery` rating system made by Geoff Ellerby. You can find the repo [here](https://github.com/gellerby/jquery-emoji-ratings).
