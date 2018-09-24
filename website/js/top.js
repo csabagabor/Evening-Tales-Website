@@ -25,7 +25,7 @@ function getTopTales(limit){
                '<div class="card-body">' +
 
                "<h2>Top " +(i+1)+ " </br> " + data[i].title + "</h2>" +
-               "<p class='card-text'>" +  data[i].description.substring(0, 40)  + '</p>' +
+               "<p class='card-text'>" +  data[i].description.substring(0, 40) + '...' + '</p>' +
                '<h5>Date added: '+ data[i].dateAdded +  '</h5>' +
                '<p id="rating-date-' + data[i].dateAdded + '"></p>' +
                '<a href="main.html" id="tale-date-' + data[i].dateAdded +'" class="li-modal btn btn-info">See Full description</a>' +
