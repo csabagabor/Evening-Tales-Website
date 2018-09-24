@@ -59,8 +59,8 @@ for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)
 			    "  \"title\": \"\", \n " +
 			    "  \"description\": \"\" \n " +
 			    " },"
-					);		   
-		}
+			);		   
+}
 System.out.print(builder.substring(0, builder.length()-1));//remove comma at the end
 ```
 2. Before inserting the new story into the title/description field, you have to escape some characters in it to be a valid `json`; a good tool for this is [here](https://www.freeformatter.com/json-escape.html)
