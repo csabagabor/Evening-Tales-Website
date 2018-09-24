@@ -1,5 +1,6 @@
 # Bedtime stories website for kids with Spring Boot REST API + PostgreSQL hosted on Heroku
 ### About
+- Check out a small introduction video on Youtube: [here](https://www.youtube.com/watch?v=zZr4uUul8U0&feature=youtu.be)
 - This is a small application which serves a new bedtime story for kids every day.
 - Currently it hosts a total of 60 stories so new stories won't be available after 24 Nov 2018. 
 - Every story can be rated by users and all the average ratings are stored in a `PostgreSQL` database. The frontend communicates with the backend with a `REST` api.
